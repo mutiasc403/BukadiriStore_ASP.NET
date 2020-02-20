@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div style="text-align:center">
+    <img src="~/Content/Pictures/logobukadiri.jpg" alt="Logo BukaDiri" width="300" height="125" onclick="window.location.href='/'" />
+</div>
+<hr />
+<div style="float:left; width:50%; height:50px">
+    <a class="btn btn-danger" href="/Bukadiri/LogOut">Log out</a>
+</div>
+<div style="float:right; width: 50%; height:50px; text-align:right">
+    <a class="btn btn-secondary" href="/Bukadiri/Index">Home</a><a class="btn btn-primary" href="/Bukadiri/Setting">Setting</a>
+</div>
+<br />
+<table class="table table-hover table-striped" id="listDataHome">
+    <thead>
+        <tr>
+            <th>Nama item</th>
+            <th>Harga item</th>
+            <th>Nama provinsi</th>
+            <th>Nama pilihan</th>
+            <th>Nama lapak</th>
+        </tr>
+    </thead>
+</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            //load data Item (list)
+            $("#listDataHome").DataTable({
+                "aLengthMenu": [[5, 10, 25, 50, 75, -1], [5, 10, 25, 50, 75, "Semua"]],
+                "iDisplayLength": 5,
+                "ajax": {
+                    "url": "/Bukadiri/LoadData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "NamaItem" },
+                    { "data": "HargaItem" },
+                    { "data": "NamaProv" },
+                    { "data": "NamaPilihan" },
+                    { "data": "NamaLapak" }
+
+                ],
+                "language": {
+                    "emptyTable": "Tidak ada data yang disimpan!",
+                    "infoEmpty": "Menampilkan 0 - 0 dari 0 data",
+                    "info": "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                    "infoFiltered": "(Dari total _MAX_ data)",
+                    "lengthMenu": "Tampilkan _MENU_ data",
+                    "search": "Cari:",
+                    "processing": "Sedang dalam proses...",
+                    "loadingRecords": "Harap tunggu...",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                }
+            });//akhir load list data
+        });
+    </script>
+}

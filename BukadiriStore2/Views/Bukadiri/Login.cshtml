@@ -1,0 +1,291 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Log in</h2>
+<br />
+<table>
+    <tr>
+        <td><button id="logIn" class="btn btn-primary" >Log in</button></td>
+    </tr>
+    <tr>
+        <td><button id="signUp" class="btn btn-secondary">Sign up</button></td>
+    </tr>
+    <tr>
+        <td><button id="resetPass" class="btn-link">Reset password</button></td>
+    </tr>
+</table>
+
+<!-- Modal Login -->
+<div class="modal fade" id="logInModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Log in</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formLogIn">
+                <div class="modal-body">
+                    <table style="width:100%">
+                        <tr>
+                            <td>Username</td>
+                            <td> : </td>
+                            <td><input type="text" name="username" id="username_login" /></td>
+                        </tr>
+                        <tr>
+                            <td>Password</td>
+                            <td> : </td>
+                            <td><input type="text" name="password" id="password_login" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="hidden" name="counting" id="counting_login" /></td>
+                            <td><input type="hidden" name="status" id="status_login" /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Signup -->
+<div class="modal fade" id="signUpModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Sign up</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formSignUp">
+                <div class="modal-body">
+                    <table style="width:100%">
+                        <tr>
+                            <td>Username</td>
+                            <td> : </td>
+                            <td><input type="text" name="username" id="username" /></td>
+                        </tr>
+                        <tr>
+                            <td>Password</td>
+                            <td> : </td>
+                            <td><input type="text" name="password" id="password" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="hidden" name="counting" id="counting" /></td>
+                            <td><input type="hidden" name="status" id="status" /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal ResetPass -->
+<div class="modal fade" id="resetPassModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Reset password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formResetPass">
+                <div class="modal-body">
+                    <table style="width:100%">
+                        <tr>
+                            <td>Username</td>
+                            <td> : </td>
+                            <td><input type="text" name="username" id="username_reset" /></td>
+                        </tr>
+                        <tr>
+                            <td>Old password</td>
+                            <td> : </td>
+                            <td><input type="text" name="oldpassword" id="oldpassword" /></td>
+                        </tr>
+                        <tr>
+                            <td>New password</td>
+                            <td> : </td>
+                            <td><input type="text" name="newpassword" id="newpassword" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="hidden" name="counting" id="counting_reset" /></td>
+                            <td><input type="hidden" name="status" id="status_reset" /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //nampilin popup login
+            $("#logIn").click(function () {
+                $('#logInModal').modal("show");
+            });
+
+            //reset isi modal login saat di close
+            $("#logInModal").on('hidden.bs.modal', function (e) {
+                $(this).find('#formLogIn')[0].reset()
+            });
+
+            //proses login
+            $("#formLogIn").on('submit', function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: "/Bukadiri/CekLogIn", //penting action
+                    method: "POST", //penting method
+                    //data:{nama : nama}, //optional {key:value} (yg bakal dilempar key)
+                    data: new FormData(this), //kalo data yg mau dilempar banyak, biar ga perlu ditampung semua atau coba pake serial list //(disini ada name value) yg dikirim name nya bukan id, name !kode_provinsi sesuai model, id !KodeProvinsi (disini kebetulan sama kodeProvinsi)
+                    contentType: false, //optional
+                    cache: false, //optional
+                    processData: false, //optional
+                    dataType: "json", //optional
+                    success: function (data) { //penting //fungsi data cuma penampung/variable boleh diganti
+                        if (data.success == 1) {
+                            $("#logInModal").modal("hide");
+                            var asep = 'asep';
+                            document.location.href = 'http://localhost:26974/Bukadiri/Index';
+                            //document.location.href = 'http://localhost:26974/Bukadiri?dandan='+data.apaaja;
+                        }
+                        else {
+                            alert('Gagal LogIn!!')
+                        }
+                    }
+                });
+
+                //if ($("#username").val() == '' || $("#password").val() == '') {
+                //    alert('Data tidak boleh kosong');
+                //}
+                //else {
+                //    $.ajax({
+                //        url: "/Bukadiri/CekLogIn", //penting action
+                //        method: "POST", //penting method
+                //        //data:{nama : nama}, //optional {key:value} (yg bakal dilempar key)
+                //        data: new FormData(this), //kalo data yg mau dilempar banyak, biar ga perlu ditampung semua atau coba pake serial list //(disini ada name value) yg dikirim name nya bukan id, name !kode_provinsi sesuai model, id !KodeProvinsi (disini kebetulan sama kodeProvinsi)
+                //        contentType: false, //optional
+                //        cache: false, //optional
+                //        processData: false, //optional
+                //        dataType: "json", //optional
+                //        success: function (data) { //penting //fungsi data cuma penampung/variable boleh diganti
+                //            if (data.success == 1) {
+                //                $("#logInModal").modal("hide");
+                //                document.location.href = 'http://localhost:26974/Bukadiri/Index';
+                //            }
+                //            else {
+                //                alert('Gagal LogIn!!')
+                //            }
+                //        }
+                //    });
+                //}
+            });
+
+            //nampilin popup signup
+            $("#signUp").click(function () {
+                $('#signUpModal').modal("show");
+                $('#counting').val('0');
+                $('#status').val('available');
+            });
+
+            //reset isi modal signup saat di close
+            $("#signUpModal").on('hidden.bs.modal', function (e) {
+                $(this).find('#formSignUp')[0].reset()
+            });
+
+            //proses signup
+            $("#formSignUp").on('submit', function (event) {
+                event.preventDefault();
+
+                if ($("#username").val() == '' || $("#password").val() == '') {
+                    alert('Data tidak boleh kosong');
+                }
+                else {
+                    $.ajax({
+                        url: "/Bukadiri/SignUp", //penting action
+                        method: "POST", //penting method
+                        //data:{nama : nama}, //optional {key:value} (yg bakal dilempar key)
+                        data: new FormData(this), //kalo data yg mau dilempar banyak, biar ga perlu ditampung semua atau coba pake serial list //(disini ada name value) yg dikirim name nya bukan id, name !kode_provinsi sesuai model, id !KodeProvinsi (disini kebetulan sama kodeProvinsi)
+                        contentType: false, //optional
+                        cache: false, //optional
+                        processData: false, //optional
+                        dataType: "json", //optional
+                        success: function (data) { //penting //fungsi data cuma penampung/variable boleh diganti
+                            if (data.success == 1) {
+                                $("#signUpModal").modal("hide");
+                            }
+                            else {
+                                alert('Gagal SignUp!!')
+                            }
+                        }
+                    });
+                }
+            })
+
+            //-------------ini belom yg reset----------------
+
+            //nampilin popup resetpass
+            $("#resetPass").click(function () {
+                $('#resetPassModal').modal("show");
+                $('#counting_reset').val('0');
+                $('#status_reset').val('available');
+            });
+
+            //reset isi modal resetpass saat di close
+            $("#resetPassModal").on('hidden.bs.modal', function (e) {
+                $(this).find('#formResetPass')[0].reset()
+            });
+
+            //proses resetpass
+            $("#formResetPass").on('submit', function (event) {
+                event.preventDefault();
+
+                if ($("#username").val() == '' || $("#oldpassword").val() == '' || $("#newpassword").val() == '') {
+                    alert('Data tidak boleh kosong');
+                }
+                else {
+                    $.ajax({
+                        url: "/Bukadiri/SignUp", //penting action
+                        method: "POST", //penting method
+                        //data:{nama : nama}, //optional {key:value} (yg bakal dilempar key)
+                        data: new FormData(this), //kalo data yg mau dilempar banyak, biar ga perlu ditampung semua atau coba pake serial list //(disini ada name value) yg dikirim name nya bukan id, name !kode_provinsi sesuai model, id !KodeProvinsi (disini kebetulan sama kodeProvinsi)
+                        contentType: false, //optional
+                        cache: false, //optional
+                        processData: false, //optional
+                        dataType: "json", //optional
+                        success: function (data) { //penting //fungsi data cuma penampung/variable boleh diganti
+                            if (data.success == 1) {
+                                $("#signUpModal").modal("hide");
+                            }
+                            else {
+                                alert('Gagal SignUp!!')
+                            }
+                        }
+                    });
+                }
+            })
+
+        }) //tutup ready function
+    </script>
+}

@@ -1,0 +1,24 @@
+﻿@model IEnumerable<BukadiriStore2.Models.BukadiriProvinsi>
+
+@{
+    ViewBag.Title = "Setting";
+}
+
+<div style="text-align:center">
+    <img src="~/Content/Pictures/logobukadiri.jpg" alt="Logo BukaDiri" width="300" height="125" onclick="window.location.href='/'" />
+</div>
+<hr />
+<div style="float:left; width:50%; height:50px">
+    <a class="btn btn-danger" href="/Bukadiri/LogOut">Log out</a>
+</div>
+<div style="float:right; width: 50%; height:50px; text-align:right">
+    <a class="btn btn-primary" href="/Bukadiri/Index">Home</a><a class="btn btn-secondary" href="/Bukadiri/Setting">Setting</a>
+</div>
+<br />
+<div style="text-align:center">
+    <a id="btn_provinsi" class="btn btn-primary" href="/Bukadiri/Provinsi">Provinsi</a>
+    <a id="btn_pilihan" class="btn btn-primary" href="/Bukadiri/Pilihan">Pilihan</a>
+    <a id="btn_lapak" class="btn btn-primary" href="/Bukadiri/Lapak">Lapak</a>
+    <a id="btn_item" class="btn btn-primary" href="/Bukadiri/Item">Item</a>
+</div>
+<br />

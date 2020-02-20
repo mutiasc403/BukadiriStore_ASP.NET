@@ -1,0 +1,557 @@
+﻿@model IEnumerable<BukadiriStore2.Models.BukadiriLapak>
+
+@{
+    ViewBag.Title = "Lapak";
+}
+
+<div style="text-align:center">
+    <img src="~/Content/Pictures/logobukadiri.jpg" alt="Logo BukaDiri" width="300" height="125" onclick="window.location.href='/'" />
+</div>
+<hr />
+<div style="float:left; width:50%; height:50px">
+    <a class="btn btn-danger" href="/Bukadiri/LogOut">Log out</a>
+</div>
+<div style="float:right; width: 50%; height:50px; text-align:right">
+    <a class="btn btn-primary" href="/Bukadiri/Index">Home</a><a class="btn btn-secondary" href="/Bukadiri/Setting">Setting</a>
+</div>
+<br />
+<div style="text-align:center">
+    <a id="btn_provinsi" class="btn btn-primary" href="/Bukadiri/Provinsi">Provinsi</a>
+    <a id="btn_pilihan" class="btn btn-primary" href="/Bukadiri/Pilihan">Pilihan</a>
+    <a id="btn_lapak" class="btn btn-secondary" href="/Bukadiri/Lapak">Lapak</a>
+    <a id="btn_item" class="btn btn-primary" href="/Bukadiri/Item">Item</a>
+</div>
+<br />
+
+<div style="text-align:center">
+    <h4>Data Lapak</h4>
+</div>
+<button id="addModal" class="btn btn-primary"><i class="fa fa-plus"> Tambah Lapak</i></button>
+<a class="btn btn-primary" href="@Url.Action("ExportReportLapak","Bukadiri")"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Export Data Lapak</a>
+<hr />
+
+@* =======alert======= *@
+<div id="notifsukses" class="alert alert-success alert-dismissible fade show" role="alert" style="display:none;">
+    <strong id="pesansukses">Data berhasil disimpan!</strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div id="notifgagal" class="alert alert-danger alert-dismissible fade show" role="alert" style="display:none;">
+    <strong id="pesangagal">Data gagal disimpan!</strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<table id="tableLapak" class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>Kode lapak</th>
+            <th>Nama lapak</th>
+            <th>Tanggal Buat</th>
+            <th>Tanggal Ubah</th>
+            <th>Tanggal Hapus</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+</table>
+
+<!-- Modal Tambah -->
+<div class="modal fade" id="tambahModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    @*<div class="modal-dialog modal-lg" role="document">*@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @*<form action="/Biodata/Simpan/" method="post">*@
+            <form id="formTambah">
+                <div class="modal-body">
+                    @*kalo mau berfungsi buttonnya dikasih form*@
+                    <table class="table" style="width:100%;">
+                        <tr>
+                            <td>Kode lapak</td>
+                            <td>
+                                <input type="text" name="kodeLapak" id="kodeLapak" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Nama lapak</td>
+                            <td>
+                                <input type="text" name="namaLapak" id="namaLapak" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Peringkat lapak</td>
+                            <td>
+                                <input type="text" name="peringkatLapak" id="peringkatLapak" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="hidden" name="isDelete" /></td> @*ini default nya 0 krn integer kalo null jd nol, tp boleh juga dikasih value 0*@
+                            <td>
+                                <input type="hidden" name="tanggalBuat" id="tanggalBuat" />
+                                <input type="hidden" name="tanggalUbah" id="tanggalUbah" value=" " />
+                                <input type="hidden" name="tanggalHapus" id="tanggalHapus" value=" " />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i> Tutup</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Kirim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detail -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table" style="width:100%;">
+                    <tr>
+                        <td>Kode lapak</td>
+                        <td> : </td>
+                        <td>
+                            <input type="text" name="kodeLapak" id="kodeLapak_detail" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Nama lapak</td>
+                        <td> : </td>
+                        <td>
+                            <input type="text" name="namaLapak" id="namaLapak_detail" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Peringkat lapak</td>
+                        <td> : </td>
+                        <td>
+                            <input type="text" name="peringkatLapak" id="peringkatLapak_detail" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal buat</td>
+                        <td> : </td>
+                        <td>
+                            <input type="text" name="tanggalBuat" id="tanggalBuat_detail" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal ubah</td>
+                        <td> : </td>
+                        <td>
+                            <input type="text" name="tanggalUbah" id="tanggalUbah_detail" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal hapus</td>
+                        <td> : </td>
+                        <td>
+                            <input type="text" name="tanggalHapus" id="tanggalHapus_detail" readonly />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i> Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @*<form action="/Biodata/Simpan/" method="post">*@
+            <form id="formEdit">
+                <div class="modal-body">
+                    @*kalo mau berfungsi buttonnya dikasih form*@
+                    <table class="table" style="width:100%;">
+                        <tr>
+                            <td>Kode Lapak</td>
+                            <td>
+                                <input type="text" name="kodeLapak" id="kodeLapak_edit" readonly />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Nama Lapak</td>
+                            <td>
+                                <input type="text" name="namaLapak" id="namaLapak_edit" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Peringkat Lapak</td>
+                            <td>
+                                <input type="text" name="peringkatLapak" id="peringkatLapak_edit" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="hidden" name="isDelete" /></td>
+                            <td>
+                                <input type="hidden" name="tanggalBuat" id="tanggalBuat_edit" />
+                                <input type="hidden" name="tanggalUbah" id="tanggalUbah_edit" />
+                                <input type="hidden" name="tanggalHapus" id="tanggalHapus_edit" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i> Tutup</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> Ubah</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @*<form action="/Biodata/Simpan/" method="post">*@
+            <form id="formDelete">
+                <div class="modal-body">
+                    <p><h4 style="text-align:center">Apakah anda yakin ingin menghapus table ini?</h4></p>
+                    <input type="hidden" name="kodeLapak" id="kodeLapak_delete" />
+                    <input type="hidden" name="namaLapak" id="namaLapak_delete" />
+                    <input type="hidden" name="peringkatLapak" id="peringkatLapak_delete" />
+                    <input type="hidden" name="isDelete" id="isDelete" value="1" />
+                    <input type="hidden" name="tanggalBuat" id="tanggalBuat_delete" />
+                    <input type="hidden" name="tanggalUbah" id="tanggalUbah_delete" />
+                    <input type="hidden" name="tanggalHapus" id="tanggalHapus_delete" />
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i> Tutup</button>
+                    <button type="submit" class="btn btn-danger" id="hapusOK"><i class="fa fa-trash"></i> Ya</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Aktifkan -->
+<div class="modal" tabindex="-1" role="dialog" id="AktifModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah anda yakin akan mengaktifkannya?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times-circle"></i> Tutup</button>
+                <button type="button" class="btn btn-success" id="aktifOK"><i class="fa fa-power-off"></i> Aktifkan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //datatable Lapak
+            $("#tableLapak").DataTable({
+                "ajax": {
+                    "url": "/Bukadiri/LoadDataLapak",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "kodeLapak" },
+                    { "data": "namaLapak" },
+                    { "data": "tanggalBuat" },
+                    { "data": "tanggalUbah" },
+                    { "data": "tanggalHapus" },
+                    {
+                        "data": "isDelete",
+                        "render": function (data) {
+                            if (data == 0) {
+                                return "<button class='btn alert-success'>Aktif</button>";
+                            } else {
+                                return "<button class='btn alert-danger'>Tidak Aktif</button>";
+                            }
+                            //return "<button id='" + full["kode_Lapak"] + "' class='lihat btn btn-info'><i class='fa fa-eye'></i> Lihat</button>";
+
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "100px"
+                    },
+                    {//tambahan untuk button
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            if (full["isDelete"] == 0) {
+                                return "<button id='" + full["kodeLapak"] + "' class='detail btn btn-info'><i class='fa fa-eye'></i> Lihat</button>&nbsp;<button id='" + full["kodeLapak"] + "' class='edit btn btn-warning'><i class='fa fa-pencil-square-o'></i> Edit</button>&nbsp;<button class='delete btn btn-danger' id='" + full["kodeLapak"] + "'><i class='fa fa-trash-o'></i> Hapus</button>";
+                            } else {
+                                return "<button id='" + full["kodeLapak"] + "' class='aktif btn btn-success'><i class='fa fa-power-off'></i> Aktifkan</button>";
+                            }
+
+                            //return "<button id='" + full["kode_Lapak"] + "' class='lihat btn btn-info'><i class='fa fa-eye'></i> Lihat</button>&nbsp;<button id='" + full["kode_Lapak"] + "' class='edit btn btn-success'><i class='fa fa-pencil-square-o'></i> Edit</button>&nbsp;<button class='hapus btn btn-danger' id='" + full["kode_Lapak"] + "'><i class='fa fa-trash-o'></i> Hapus</button>";
+
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "250px"
+                    },
+                ],
+            });
+
+            //reset isi modal saat di close
+            $("#tambahModal").on('hidden.bs.modal', function (e) {
+                $(this).find('#formTambah')[0].reset()
+                //$('#exampleModal').modal("show");
+            });
+
+            //nampilin popup (modal tambah) dengan script
+            $("#addModal").click(function () {
+                var updateTanggal = new Date();
+
+                $("#tanggalBuat").val(updateTanggal.toLocaleString());
+                $('#tambahModal').modal({ backdrop: 'static', keyboard: false });
+                //$('#exampleModal').modal("show");
+            });
+
+            //proses tambah
+            $("#formTambah").on('submit', function (event) {
+                event.preventDefault(); //preventDefault atau event.preventDefault() adalah sebuah method yang berfungsi untuk mencegah terjadinya event bawaan dari sebuah DOM, misalnya tag "a href" jika kita klik, maka halaman browser akan melakukan reload, atau sebuah form jika kita klik tombol submit maka akan melakukan reload pula.
+                //alert("Jalan");
+                var nama = $("#kodeLapak").val(); //ini get value (set value nya di edit)
+
+                if ($("#kodeLapak").val() == '' || $("#namaLapak").val() == '') {
+                    alert('Data tidak boleh kosong');
+                }
+                else {
+                    $.ajax({
+                        url: "/Bukadiri/SimpanLapak", //penting action
+                        method: "POST", //penting method
+                        //data:{nama : nama}, //optional {key:value} (yg bakal dilempar key)
+                        data: new FormData(this), //kalo data yg mau dilempar banyak, biar ga perlu ditampung semua atau coba pake serial list //(disini ada name value) yg dikirim name nya bukan id, name !kode_Lapak sesuai model, id !kodeLapak (disini kebetulan sama kodeLapak)
+                        contentType: false, //optional
+                        cache: false, //optional
+                        processData: false, //optional
+                        dataType: "json", //optional
+                        success: function (data) { //penting //fungsi data cuma penampung/variable boleh diganti
+                            if (data.success == 1) {
+                                $("#tableLapak").DataTable().ajax.reload();
+                                $("#notifsukses").fadeTo(4000, 500).slideUp(500, function () {
+                                    $("#notifsukses").slideUp(500);
+                                })
+                            }
+                            else {
+                                $("#notifgagal").fadeTo(4000, 500).slideUp(500, function () {
+                                    $("#notifgagal").slideUp(500);
+                                })
+                                //$("#exampleModal").modal("hide");
+                            }
+                            $("#tambahModal").modal("hide");
+                        }
+                    });
+                }
+            });
+
+            //modal detail
+            $(document).on('click', '.detail', function () {
+                var nm = $(this).attr("id");
+                var updateTanggal = new Date();
+
+                $.ajax({
+                    url: "/Bukadiri/DetailLapak/" + nm, //penting action
+                    dataType: "json", //optional //cek json di inspect > network > xhr > response
+                    success: function (json) { //penting //fungsi json cuma penampung/variable boleh diganti
+                        $("#kodeLapak_detail").val(json.data.kodeLapak); //ini set value (set value nya di add)
+                        $("#namaLapak_detail").val(json.data.namaLapak); //variable/controller/...
+                        $("#peringkatLapak_detail").val(json.data.peringkatLapak);
+                        $("#tanggalBuat_detail").val(json.data.tanggalBuat);
+                        $("#tanggalUbah_detail").val(json.data.tanggalUbah);
+                        $("#tanggalHapus_detail").val(json.data.tanggalHapus);
+                    }
+                });
+
+                $('#detailModal').modal({ backdrop: 'static', keyboard: false });
+            });
+
+
+            //modal edit
+            $(document).on('click', '.edit', function () {
+                var nm = $(this).attr("id");
+                var updateTanggal = new Date();
+
+                $.ajax({
+                    url: "/Bukadiri/EditLapak/" + nm, //penting action
+                    dataType: "json", //optional //cek json di inspect > network > xhr > response
+                    success: function (json) { //penting //fungsi json cuma penampung/variable boleh diganti
+                        $("#kodeLapak_edit").val(json.data.kodeLapak);
+                        $("#namaLapak_edit").val(json.data.namaLapak); //variable/controller/...
+                        $("#peringkatLapak_edit").val(json.data.peringkatLapak);
+                        $("#tanggalBuat_edit").val(json.data.tanggalBuat);
+                        $("#tanggalUbah_edit").val(updateTanggal.toLocaleString());
+                        $("#tanggalHapus_edit").val(json.data.tanggalHapus);
+                    }
+                });
+
+                $('#editModal').modal({ backdrop: 'static', keyboard: false });
+            });
+
+            //proses edit
+            $("#formEdit").on('submit', function (event) {
+                event.preventDefault(); //preventDefault atau event.preventDefault() adalah sebuah method yang berfungsi untuk mencegah terjadinya event bawaan dari sebuah DOM, misalnya tag "a href" jika kita klik, maka halaman browser akan melakukan reload, atau sebuah form jika kita klik tombol submit maka akan melakukan reload pula.
+                //alert("Jalan");
+                var nama = $("#kodeLapak").val();
+                $.ajax({
+                    url: "/Bukadiri/UpdateLapak", //penting action
+                    method: "POST", //penting method
+                    //data:{nama : nama}, //optional {key:value} (yg bakal dilempar key)
+                    data: new FormData(this), //kalo data yg mau dilempar banyak, biar ga perlu ditampung semua atau coba pake seriallist
+                    contentType: false, //optional
+                    cache: false, //optional
+                    processData: false, //optional
+                    dataType: "json", //optional
+                    success: function (data) { //penting //fungsi data cuma penampung/variable boleh diganti
+                        if (data.success == 1) {
+                            $("#tableLapak").DataTable().ajax.reload();
+                            $("#pesansukses").text(' Data berhasil diupdate');
+                            //$("#notifsukses").css("display", "block");
+                            $("#notifsukses").fadeTo(4000, 500).slideUp(500, function () {
+                                $("#notifsukses").slideUp(500);
+                            });
+                        }
+                        else {
+                            $("#pesangagal").text(' Data gagal diupdate!');
+                            //$("#notifgagal").css("display", "block");
+                            $("#notifgagal").fadeTo(4000, 500).slideUp(500, function () {
+                                $("#notifgagal").slideUp(500);
+                            });
+                        }
+                        $("#editModal").modal("hide");
+                    }
+                });
+            });
+
+            //modal delete
+            $(document).on('click', '.delete', function () {
+                var nm = $(this).attr("id");
+                var updateTanggal = new Date();
+
+                $.ajax({
+                    url: "/Bukadiri/DeleteLapak/" + nm, //penting action
+                    dataType: "json", //optional //cek json di inspect > network > xhr > response
+                    success: function (json) { //penting //fungsi json cuma penampung/variable boleh diganti
+                        $("#kodeLapak_delete").val(json.data.kodeLapak);
+                        $("#namaLapak_delete").val(json.data.namaLapak); //variable/controller/...
+                        $("#peringkatLapak_delete").val(json.data.peringkatLapak);
+                        //$("#isDelete").val(json.data.isDelete);
+                        $("#tanggalBuat_delete").val(json.data.tanggalBuat);
+                        $("#tanggalUbah_delete").val(json.data.tanggalUbah);
+                        $("#tanggalHapus_delete").val(updateTanggal.toLocaleString());
+                    }
+                });
+
+                $('#deleteModal').modal({ backdrop: 'static', keyboard: false });
+            });
+
+            //proses delete
+            $("#formDelete").on('submit', function (event) {
+                event.preventDefault(); //preventDefault atau event.preventDefault() adalah sebuah method yang berfungsi untuk mencegah terjadinya event bawaan dari sebuah DOM, misalnya tag "a href" jika kita klik, maka halaman browser akan melakukan reload, atau sebuah form jika kita klik tombol submit maka akan melakukan reload pula.
+                //alert("Jalan");
+                var nama = $("#kodeLapak").val();
+                $.ajax({
+                    url: "/Bukadiri/UpdateDeleteLapak", //penting action
+                    method: "POST", //penting method
+                    //data:{nama : nama}, //optional {key:value} (yg bakal dilempar key)
+                    data: new FormData(this), //kalo data yg mau dilempar banyak, biar ga perlu ditampung semua atau coba pake seriallist
+                    contentType: false, //optional
+                    cache: false, //optional
+                    processData: false, //optional
+                    dataType: "json", //optional
+                    beforeSend: function () {
+                        $("#hapusOK").html('<i class="fa fa-hourglass-half"></i> proses menghapus . . .');
+                    },
+                    success: function (data) { //penting //fungsi data cuma penampung/variable boleh diganti
+                        setTimeout(function () {
+                            $("#hapusOK").html('<i class="fa fa-trash-o"></i> Ya');
+                            if (data.success) {
+                                $("#tableLapak").DataTable().ajax.reload();
+                                $("#pesansukses").text(' Data berhasil dihapus (non aktif)!');
+                                //$("#notifsukses").css("display", "block");
+                                $("#notifsukses").fadeTo(4000, 500).slideUp(500, function () {
+                                    $("#notifsukses").slideUp(500);
+                                });
+                            }
+                            else {
+                                $("#pesangagal").text(' Data gagal dihapus! Mohon hapus data di table Item terlebih dahulu ');
+                                //$("#notifgagal").css("display", "block");
+                                $("#notifgagal").fadeTo(4000, 500).slideUp(500, function () {
+                                    $("#notifgagal").slideUp(500);
+                                });
+                            }
+                            $("#deleteModal").modal("hide");
+                        }, 2000);
+                    }
+                });
+            });
+
+            //modal aktifkan(konfirmasi)
+            var kode_aktif;//variable global
+            $(document).on('click', '.aktif', function () {
+                kode_aktif = $(this).attr("id");
+                $("#AktifModal").modal({ backdrop: "static", keyboard: false });
+            });
+
+            //proses aktifkan
+            $("#aktifOK").click(function () {
+                $.ajax({
+                    url: "/Bukadiri/AktifLapak/" + kode_aktif,
+                    beforeSend: function () {
+                        $("#aktifOK").html('<i class="fa fa-hourglass-half"></i> proses mengaktifkan . . .');
+                    },
+                    success: function (data) {
+                        setTimeout(function () {
+                            $("#aktifOK").html('<i class="fa fa-power_off"></i> Aktifkan');
+                            $("#AktifModal").modal("hide");
+                            $("#pesansukses").text(' Data berhasil diaktifkan!');
+                            //$("#notifsukses").css("display", "block");
+                            $("#notifsukses").fadeTo(4000, 500).slideUp(500, function () {
+                                $("#notifsukses").slideUp(500);
+                            });
+                            $("#tableLapak").DataTable().ajax.reload();
+                        }, 2000);
+                    }
+                });
+            });//akhir aktifkan
+        });//ini tutupnya ready function
+    </script>
+}
